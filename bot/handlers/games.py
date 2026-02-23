@@ -6,7 +6,7 @@ from aiogram.types import Message
 from bot.database import queries
 from bot.filters.is_admin import IsAdmin
 from bot.states.states import AddGameStates
-from bot.utils.formatters import format_games_list
+from bot.utils.formatters import format_games_desc_chunks, format_games_list
 
 router = Router()
 
@@ -15,6 +15,13 @@ router = Router()
 async def cmd_games(message: Message) -> None:
     games = await queries.get_active_games()
     await message.answer(format_games_list(games))
+
+
+@router.message(Command("games_desc"))
+async def cmd_games_desc(message: Message) -> None:
+    games = await queries.get_active_games()
+    for chunk in format_games_desc_chunks(games):
+        await message.answer(chunk, parse_mode="HTML")
 
 
 @router.message(Command("addgame"))

@@ -20,6 +20,63 @@ def format_games_list(games: list) -> str:
     return "\n".join(lines)
 
 
+MAX_TG_MSG = 4000  # чуть меньше лимита 4096 для запаса
+
+
+def format_games_desc_chunks(games: list) -> list[str]:
+    """Возвращает список сообщений с играми и описаниями.
+    Разбивает по границам игр, чтобы не превысить лимит Telegram."""
+    if not games:
+        return ["Список игр пуст. Добавьте первую игру командой /addgame"]
+
+    total = len(games)
+
+    # Собираем текстовый блок для каждой игры
+    blocks: list[str] = []
+    for i, game in enumerate(games, 1):
+        desc = game["description"] or "нет описания"
+        avg_score = game["avg_score"]
+        rating_count = game["rating_count"]
+        if avg_score is not None and rating_count > 0:
+            score_str = f"⭐ {avg_score}/10 ({rating_count} {_rating_word(rating_count)})"
+        else:
+            score_str = "⭐ нет оценок"
+        blocks.append(f"{i}. <b>{game['name']}</b>\n   {desc}\n   {score_str}")
+
+    # Разбиваем на чанки, не превышая MAX_TG_MSG
+    chunks: list[str] = []
+    current_lines: list[str] = []
+    current_len = 0
+
+    for block in blocks:
+        # +1 за \n\n между блоками
+        needed = len(block) + (2 if current_lines else 0)
+        if current_lines and current_len + needed > MAX_TG_MSG:
+            chunks.append("\n\n".join(current_lines))
+            current_lines = []
+            current_len = 0
+        current_lines.append(block)
+        current_len += needed
+
+    if current_lines:
+        chunks.append("\n\n".join(current_lines))
+
+    # Добавляем заголовок с номером страницы, если чанков больше одного
+    n = len(chunks)
+    header_base = f"📋 Игры с описаниями ({{}}/{n}):\n\n"
+    footer = f"\n\nВсего игр: {total}"
+
+    if n == 1:
+        return [f"📋 Игры с описаниями:\n\n{chunks[0]}{footer}"]
+
+    result = []
+    for idx, chunk in enumerate(chunks, 1):
+        header = header_base.format(idx)
+        page_footer = footer if idx == n else ""
+        result.append(f"{header}{chunk}{page_footer}")
+    return result
+
+
 def format_game_select_results(poll_row: Any, votes: list, options_map: dict) -> str:
     # Count votes per option
     vote_counts: dict[str, list[str]] = {}
