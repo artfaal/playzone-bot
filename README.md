@@ -1,4 +1,4 @@
-# ozon-playzone-bot
+# playzone-bot
 
 Telegram-бот для организации игровых сессий в команде. Хранит список кооперативных игр, проводит не анонимные голосования за игру, дату и рейтинг после сессии.
 
@@ -25,7 +25,7 @@ Telegram-бот для организации игровых сессий в к�
 
 ```bash
 git clone <repo-url>
-cd ozon-playzone-bot
+cd playzone-bot
 ```
 
 ### 2. Создать `.env`
@@ -84,7 +84,7 @@ docker compose up --build -d
 ## Структура проекта
 
 ```
-ozon-playzone-bot/
+playzone-bot/
 ├── bot/
 │   ├── config.py             # Конфигурация из .env
 │   ├── main.py               # Точка входа
