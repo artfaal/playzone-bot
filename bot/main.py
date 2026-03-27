@@ -7,6 +7,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from bot.config import config
 from bot.database.connection import close_db, init_db
 from bot.handlers import admin_polls, common, games, poll_answers
+from bot.middlewares.topic_filter import TopicFilterMiddleware
 
 logging.basicConfig(
     level=logging.INFO,
@@ -21,6 +22,8 @@ async def main() -> None:
 
     bot = Bot(token=config.bot_token)
     dp = Dispatcher(storage=MemoryStorage())
+
+    dp.message.middleware(TopicFilterMiddleware())
 
     dp.include_router(common.router)
     dp.include_router(games.router)

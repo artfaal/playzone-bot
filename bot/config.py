@@ -15,6 +15,8 @@ class Config:
             if uid.strip().isdigit()
         }
         self.group_chat_id: int = int(os.environ["GROUP_CHAT_ID"])
+        topic_id_raw = os.environ.get("TOPIC_THREAD_ID", "")
+        self.topic_thread_id: int | None = int(topic_id_raw) if topic_id_raw.strip() else None
 
 
 config = Config()

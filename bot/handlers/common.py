@@ -2,6 +2,8 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
 
+from bot.filters.is_admin import IsAdmin
+
 router = Router()
 
 HELP_TEXT = """
@@ -18,6 +20,7 @@ HELP_TEXT = """
 /start_rating — Голосование: рейтинг игры (1–10)
 /start_day_vote — Голосование: выбор даты
 /close_poll — Закрыть текущий опрос и показать итоги
+/topic_id — Показать ID текущего топика
 """.strip()
 
 
@@ -35,3 +38,12 @@ async def cmd_start(message: Message) -> None:
 @router.message(Command("help"))
 async def cmd_help(message: Message) -> None:
     await message.answer(HELP_TEXT, parse_mode="HTML")
+
+
+@router.message(Command("topic_id"), IsAdmin())
+async def cmd_topic_id(message: Message) -> None:
+    thread_id = message.message_thread_id
+    if thread_id is not None:
+        await message.answer(f"ID этого топика: <code>{thread_id}</code>", parse_mode="HTML")
+    else:
+        await message.answer("Это сообщение не в топике (message_thread_id отсутствует).")

@@ -64,6 +64,7 @@ async def cmd_start_vote_random(message: Message, bot: Bot) -> None:
         options=options,
         is_anonymous=False,
         allows_multiple_answers=True,
+        message_thread_id=config.topic_thread_id,
     )
     await queries.create_poll(
         telegram_poll_id=sent.poll.id,
@@ -133,6 +134,7 @@ async def vote_manual_game_ids(message: Message, state: FSMContext, bot: Bot) ->
         options=options,
         is_anonymous=False,
         allows_multiple_answers=True,
+        message_thread_id=config.topic_thread_id,
     )
     await queries.create_poll(
         telegram_poll_id=sent.poll.id,
@@ -196,6 +198,7 @@ async def rating_game_selected(message: Message, state: FSMContext, bot: Bot) ->
         options=options,
         is_anonymous=False,
         allows_multiple_answers=False,
+        message_thread_id=config.topic_thread_id,
     )
     await queries.create_poll(
         telegram_poll_id=sent.poll.id,
@@ -270,6 +273,7 @@ async def day_vote_dates(message: Message, state: FSMContext, bot: Bot) -> None:
         options=options,
         is_anonymous=False,
         allows_multiple_answers=True,
+        message_thread_id=config.topic_thread_id,
     )
     await queries.create_poll(
         telegram_poll_id=sent.poll.id,
@@ -340,7 +344,11 @@ async def cmd_close_poll(message: Message, bot: Bot) -> None:
         result = "Неизвестный тип опроса."
 
     # Результаты всегда в группу
-    await bot.send_message(chat_id=config.group_chat_id, text=result)
+    await bot.send_message(
+        chat_id=config.group_chat_id,
+        text=result,
+        message_thread_id=config.topic_thread_id,
+    )
 
     # Если admin писал из лички — подтверждаем там
     if message.chat.id != config.group_chat_id:
