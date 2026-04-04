@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
+from aiogram.dispatcher.dispatcher import BackoffConfig
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from bot.config import config
@@ -32,7 +33,11 @@ async def main() -> None:
 
     logger.info("Starting bot polling...")
     try:
-        await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
+        await dp.start_polling(
+            bot,
+            allowed_updates=dp.resolve_used_update_types(),
+            backoff_config=BackoffConfig(min_delay=5.0, max_delay=60.0, factor=2.0),
+        )
     finally:
         await close_db()
         await bot.session.close()
