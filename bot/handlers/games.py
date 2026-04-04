@@ -1,7 +1,7 @@
 from aiogram import Router, F
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
+from aiogram.types import ForceReply, Message
 
 from bot.database import queries
 from bot.filters.is_admin import IsAdmin
@@ -27,7 +27,10 @@ async def cmd_games_desc(message: Message) -> None:
 @router.message(Command("addgame"))
 async def cmd_addgame(message: Message, state: FSMContext) -> None:
     await state.set_state(AddGameStates.waiting_for_name)
-    await message.answer("Введите название игры:")
+    await message.answer(
+        "Введите название игры:",
+        reply_markup=ForceReply(selective=True),
+    )
 
 
 # /skip должен быть зарегистрирован ДО общего cancel-хендлера,
@@ -63,7 +66,8 @@ async def addgame_name(message: Message, state: FSMContext) -> None:
     await state.update_data(name=name)
     await state.set_state(AddGameStates.waiting_for_description)
     await message.answer(
-        "Введите описание игры (или отправьте /skip, чтобы пропустить):"
+        "Введите описание игры (или отправьте /skip, чтобы пропустить):",
+        reply_markup=ForceReply(selective=True),
     )
 
 

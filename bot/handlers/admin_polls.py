@@ -5,7 +5,7 @@ from datetime import datetime
 from aiogram import Bot, Router, F
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
+from aiogram.types import ForceReply, Message
 
 from bot.config import config
 from bot.database import queries
@@ -92,7 +92,7 @@ async def cmd_start_vote_manual(message: Message, state: FSMContext) -> None:
 
     await state.update_data(games=[dict(g) for g in games])
     await state.set_state(VoteManualStates.waiting_for_game_ids)
-    await message.answer("\n".join(lines))
+    await message.answer("\n".join(lines), reply_markup=ForceReply(selective=True))
 
 
 @router.message(VoteManualStates.waiting_for_game_ids, IsAdmin())
@@ -163,7 +163,7 @@ async def cmd_start_rating(message: Message, state: FSMContext) -> None:
 
     await state.update_data(games=[dict(g) for g in games])
     await state.set_state(RatingStates.waiting_for_game)
-    await message.answer("\n".join(lines))
+    await message.answer("\n".join(lines), reply_markup=ForceReply(selective=True))
 
 
 @router.message(RatingStates.waiting_for_game, IsAdmin())
@@ -222,6 +222,7 @@ async def cmd_start_day_vote(message: Message, state: FSMContext) -> None:
         "Введите даты через запятую в формате ДД.ММ\n"
         "Например: <code>25.02, 01.03, 07.03</code>",
         parse_mode="HTML",
+        reply_markup=ForceReply(selective=True),
     )
 
 
