@@ -36,7 +36,7 @@ async def main() -> None:
         await dp.start_polling(
             bot,
             allowed_updates=dp.resolve_used_update_types(),
-            backoff_config=BackoffConfig(min_delay=5.0, max_delay=60.0, factor=2.0),
+            backoff_config=BackoffConfig(min_delay=5.0, max_delay=60.0, factor=2.0, jitter=1.0),
         )
     finally:
         await close_db()
